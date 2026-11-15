@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Join a Circalune circle</title>
+  <style>
+    body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #14182e; color: #f7f1e6; font-family: sans-serif; }
+    main { width: min(420px, calc(100% - 32px)); text-align: center; }
+    h1 { font-size: 32px; margin: 0 0 8px; }
+    p { color: #d9d3ea; line-height: 1.45; }
+    .code { margin: 20px 0; font-size: 32px; letter-spacing: 0.22em; font-weight: 700; }
+    a { display: block; margin-top: 12px; padding: 14px 16px; border-radius: 999px; background: #d7c7ff; color: #24183f; text-decoration: none; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Circalune</h1>
+    <p id="lead">Open the app and type this code.</p>
+    <p class="code" id="code"></p>
+    <a id="open" href="#">Open Circalune</a>
+  </main>
+  <script>
+    var code = (new URLSearchParams(location.search).get("code") || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
+    var codeNode = document.getElementById("code");
+    var open = document.getElementById("open");
+    if (!code) {
+      codeNode.textContent = "NO CODE";
+      document.getElementById("lead").textContent = "Ask them to send the invite again.";
+      open.style.display = "none";
+    } else {
+      codeNode.textContent = code;
+      var app = "circalune://join/" + code;
+      var intent = "intent://join/" + code + "#Intent;scheme=circalune;package=app.circalune;S.browser_fallback_url=" + encodeURIComponent(location.href) + ";end";
+      open.href = /Android/i.test(navigator.userAgent) ? intent : app;
+      open.textContent = "Open Circalune and join " + code;
+      if (!sessionStorage.getItem("circalune-opened")) {
+        sessionStorage.setItem("circalune-opened", "1");
+        setTimeout(function () { location.href = open.href; }, 300);
+      }
+    }
+  </script>
+</body>
+</html>
